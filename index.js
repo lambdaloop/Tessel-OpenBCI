@@ -116,15 +116,13 @@ function BCI(hardware, callback) {
 }
 
 // We want the ability to emit events
-util.inherits(BCI, EventEmitter);
+// util.inherits(BCI, EventEmitter);
 
 BCI.prototype._wakeUp = function (callback) {
   // only allowed to send WAKEUP after sending STANDBY
-  this.chipSelect.output(false);
-  this.spi.send(_WAKEUP, function (err) {
+    this.spi.send(_WAKEUP, function (err) {
     setTimeout(function () {
-      this.chipSelect.output(true);
-      if (callback) {
+        if (callback) {
         callback();
       }
     }, 3); //must wait 4 tCLK cycles before sending another command (Datasheet, pg. 35)
@@ -132,10 +130,8 @@ BCI.prototype._wakeUp = function (callback) {
 };
 
 BCI.prototype._standby = function (callback) {
-  this.chipSelect.output(false);
   this.spi.send(_STANDBY, function (err) {
-    this.chipSelect.output(true);
-    if (callback) {
+      if (callback) {
       callback();
     }
   });
@@ -143,11 +139,10 @@ BCI.prototype._standby = function (callback) {
 
 // Reset all the registers to default settings
 BCI.prototype._reset = function (callback) {
-  this.chipSelect.output(false);
-  this.spi.send(_RESET, function (err) {
+    var self = this;
+    this.spi.send(new Buffer([_RESET]), function (err) {
     setTimeout(function () {
-      this.chipSelect.output(true);
-      if (callback) {
+        if (callback) {
         callback();
       }
     }, 12); //must wait 18 tCLK cycles to execute this command (Datasheet, pg. 35)
@@ -156,10 +151,9 @@ BCI.prototype._reset = function (callback) {
 
 // Start data conversion
 BCI.prototype._start = function (callback) {
-  this.chipSelect.output(false);
-  this.spi.send(_START, function (err) {
-    this.chipSelect.output(true);
-    if (callback) {
+    var self = this;
+  this.spi.send(new Buffer([_START]), function (err) {
+      if (callback) {
       callback();
     }
   });
@@ -167,10 +161,8 @@ BCI.prototype._start = function (callback) {
 
 // Stop data conversion
 BCI.prototype._stop = function (callback) {
-  this.chipSelect.output(false);
   this.spi.send(_STOP, function (err) {
-    this.chipSelect.output(true);
-    if (callback) {
+        if (callback) {
       callback();
     }
   });
@@ -178,10 +170,9 @@ BCI.prototype._stop = function (callback) {
 
 // Read data continuously
 BCI.prototype._rdatac = function (callback) {
-  this.chipSelect.output(false);
-  this.spi.send(_RDATAC, function (err) {
+    var self = this;
+  this.spi.send(new Buffer([_RDATAC]), function (err) {
     setTimeout(function () {
-      this.chipSelect.output(true);
       if (callback) {
         callback();
       }
@@ -191,10 +182,8 @@ BCI.prototype._rdatac = function (callback) {
 
 // Send data continuously
 BCI.prototype._sdatac = function (callback) {
-  this.chipSelect.output(false);
   this._send(_SDATAC, function (err) {
     setTimeout(function () {
-      this.chipSelect.output(true);
       if (callback) {
         callback();
       }
